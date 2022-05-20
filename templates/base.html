@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    {% block title %}
+    {% endblock %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    {% block head %}
+    {% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.min.css') }}">
+
+</head>
+<body>
+<header id="header-23">
+        <nav class="navbar navbar-light navbar-expand-md">
+            <div class="container"><a class="navbar-brand d-flex align-items-center" href="{{url_for('index')}}">MR Raja Jewellers</a><button data-bs-toggle="collapse" class="navbar-toggler text-primary border-0" data-bs-target="#navcol-16"><span><i class="fas fa-bars fs-4"></i></span></button>
+                <div class="collapse navbar-collapse" id="navcol-16">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link active" href="#">First Item</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Second Item</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Third Item</a></li>
+                        <li class="nav-item me-2"><a class="nav-link" href="#">Fourth Item</a></li>
+                    </ul>
+                    {% if current_user.is_authenticated %}
+                        <div><button class="btn btn-primary" type="button" onclick="location.href='{{url_for('logout')}}'">Logout</button></div>
+                        <div><button class="btn btn-primary" type="button" onclick="location.href='{{url_for('dashboard')}}'">Dashboard</button></div>
+                    {% else %}
+                        <div><button class="btn btn-primary" type="button" onclick="location.href='{{url_for('login')}}'">Login</button></div>
+                        <div><button class="btn btn-primary" type="button" onclick="location.href='{{url_for('register')}}'">Register</button></div>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+    {% block content %}{% endblock %}
+    <div class="footer-dark">
+        <div style="text-align:center;">
+            <h2 class="divider-style" style="margin-top:0px;"><span style="background-color:rgb(40, 45, 50);"><a href="#"><i class="fa fa-globe"></i></a>&nbsp;MR Raja Jewellers</span></h2>
+        </div>
+        <footer>
+            <div class="container">
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-md-6 item text" style="margin-bottom:0px;">
+                        <h3>Antariksh</h3>
+                        <p>“The day satellite stops functioning forever; so many works will get missing forever!”<br>We make sure that it never happens.</p>
+                    </div>
+                    <div class="col-sm-6 col-md-3 item">
+                        <h3>About</h3>
+                        <ul>
+                            <li><a href="#">Company</a></li>
+                            <li><a href="#">Team</a></li>
+                            <li><a href="#">Careers</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6 col-md-3 item">
+                        <h3>Services</h3>
+                        <ul>
+                            <li><a href="#">Monitoring</a></li>
+                            <li><a href="#">Development</a></li>
+                            <li><a href="#">Reporting</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col item social" style="margin-top:10px;"><input class="form-control-lg" type="email" style="width:200px;height:40px;margin-left:-3px;margin-bottom:11px;margin-top:30px;" value="Name@email.com"><button class="btn btn-primary" style="width:111px;height:40px;margin-top:-8px;" type="button">SUBSCRIBE</button>
+                    <h1 style="font-size:1rem;">Weekly Newsletter</h1>
+                </div>
+                <div class="col item social" style="margin-top:15px;"><a href="#"><i class="fa fa-google"></i></a><a href="#"><i class="icon ion-social-twitter"></i></a><a href="#"><i class="icon ion-social-github"></i></a><a href="#"><i class="icon ion-social-linkedin"></i></a></div>
+                <div style="text-align:center;margin-top:-40px;">
+                    <h2 class="divider-style"></h2>
+                </div>
+                <p class="copyright">Thejeswar</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
