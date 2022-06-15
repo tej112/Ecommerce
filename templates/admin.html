@@ -1,10 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+
+    {% block title %}Admin{% endblock %}
+
+    {% block content %}
+<div class="container">
+    <form action="{{ url_for('admin') }}" method="post">
+        {{ form.hidden_tag() }}
+        {{ form.name.label }}
+        {{ form.name }}<br>
+        {{ form.price.label }}
+        {{ form.price }}<br>
+        {{ form.img_link.label }}
+        {{ form.img_link }}<br>
+        {{ form.category.label }}
+        {{ form.category }}<br>
+        {{ form.submit.label }}
+        {{ form.submit }}
+    </form>
+</div>
+    {% endblock %}
+
+
+    

@@ -1,13 +1,17 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+import os
+
+import pyotp
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, EqualTo, Email
-
+from dotenv import load_dotenv
 from sendmail import send_mail
 
+load_dotenv()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -44,16 +48,75 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    price = db.Column(db.String(10), nullable=False)
+    image = db.Column(db.String(200), nullable=False)
+    category = db.Column(db.String(20), nullable=False)
+
+
+class ProductForm(FlaskForm):
+    name = StringField('Name', validators=[Length(min=2, max=200)])
+    price = StringField('Price', validators=[Length(min=2, max=10)])
+    img_link = StringField('Image', validators=[Length(min=2, max=200)])
+    category = StringField('Category', validators=[Length(min=2, max=20)])
+    submit = SubmitField('Add')
+
+
 # Routes
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+@app.route('/admin', methods=['GET', 'POST', 'PATCH'])
+def admin():
+    if request.method == 'GET':
+        if pyotp.TOTP('Hello').verify(request.args.get('messages')):
+            form = ProductForm()
+            return render_template('admin.html', form=form)
+        else:
+            return redirect(url_for('login'))
+    elif request.method == 'POST':
+        form = ProductForm(request.form)
+        name = form.name.data
+        price = form.price.data
+        image = form.img_link.data
+        category = form.category.data
+        # print(name, price, image, category)
+        product = Product(name=name, price=price, image=image, category=category)
+        db.session.add(product)
+        db.session.commit()
+        return redirect(url_for('admin', messages=pyotp.TOTP('Hello').now()))
+    elif request.method == 'PATCH':
+        form = ProductForm(request.form)
+        name = form.name.data
+        price = form.price.data
+        image = form.img_link.data
+        category = form.category.data
+        product = Product(name=name, price=price, image=image, category=category)
+        db.session.add(product)
+        db.session.commit()
+        return jsonify({"success": True}), 200
+
 # Home Page
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Display products and categories
+    products = Product.query.all()
+    pages = len(products) // 10
+    try:
+        page = int(request.args.get('page'))
+    except:
+        page = 1
+
+    products = products[(page - 1) * 10:page * 10]
+    categories = []
+    for product in products:
+        if product.category not in categories:
+            categories.append(product.category)
+    return render_template('index.html', products=products, categories=categories, page=page, pages=pages)
 
 
 # Login Page
@@ -62,6 +125,9 @@ def login():
     form = LoginForm()
     if request.method == 'POST':
         if form.validate_on_submit():
+            if form.email.data == 'admin.admin@admin.com':
+                if form.password.data == os.getenv('ADMIN_PASSWORD'):
+                    return redirect(url_for('admin', messages=pyotp.TOTP('Hello').now()))
             user = User.query.filter_by(email=form.email.data).first()
             if user:
                 if check_password_hash(user.password, form.password.data):
@@ -152,8 +218,8 @@ def logout():
     return redirect(url_for('index'))
 
 
-# Run Server
-if __name__ == '__main__':
-    # db.create_all()
-    # db.session.commit()
-    app.run(debug=True)
+# # # Run Server
+# if __name__ == '__main__':
+# #     db.create_all()
+# #     db.session.commit()
+#     app.run(debug=True)
